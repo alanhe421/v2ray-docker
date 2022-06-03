@@ -860,3 +860,7 @@ form input {
 textarea {
   width: 600px;
 }
+a{
+  user-select: none;
+  cursor: pointer;
+}
