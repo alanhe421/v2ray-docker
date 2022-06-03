@@ -159,7 +159,18 @@ proxy1 = vmess, __DomainName__, 443, username=__ClientId__, ws=true, ws-path=__W
 <script>
   regenerateClientId();
   generateClientConfig();
-  new ClipboardJS('.copy-btn');
+  const clipboard = new ClipboardJS('.copy-btn');
+
+  clipboard.on('success', function (e) {
+    console.info('Action:', e.action);
+    console.info('Text:', e.text);
+    console.info('Trigger:', e.trigger);
+    e.clearSelection();
+    e.trigger.innerText = 'Copied';
+    window.setTimeout(() => {
+      e.trigger.innerText = 'Copy to Clipboard';
+    }, 3000);
+  });
 
   function regenerateClientId() {
     document.getElementById('clientId').value = uuid.v4();
@@ -250,6 +261,7 @@ proxy1 = vmess, __DomainName__, 443, username=__ClientId__, ws=true, ws-path=__W
     }
 
   }
+
 
 </script>
 </body>
