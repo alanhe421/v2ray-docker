@@ -1,0 +1,37 @@
+version: "3"
+services:
+  v2ray:
+    image: v2ray/official
+    container_name: v2ray
+    volumes:
+      - ./v2ray/config.json:/etc/v2ray/config.json
+      - ./v2ray/log:/var/log/v2ray
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+    expose:
+      - "10086"
+  nginx:
+    image: nginx:1.17.5
+    container_name: v2ray_nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/log:/var/log/nginx
+      - /usr/share/nginx/html
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - "v2ray"
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/log:/var/log/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
