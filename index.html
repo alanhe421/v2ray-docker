@@ -32,6 +32,7 @@
 
     <script src="./jszip.min.js"></script>
     <script src="./uuid.min.js"></script>
+    <script src="./clipboard.min.js"></script>
 
 </head>
 <body data-new-gr-c-s-check-loaded="14.1062.0" data-gr-ext-installed="">
@@ -106,30 +107,20 @@ wget -qO- git.io/superbench.sh | bash</code></pre>
     <h3>
         Surge
     </h3>
-    <textarea rows="3">
-        [Proxy]
-proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=true, ws-path=/helloworld, tls=true
+    <textarea rows="3" id="surgeConfig">
     </textarea>
+    <button data-clipboard-target="#surgeConfig" class="copy-btn">
+        Copy to Clipboard
+    </button>
     <h3>
         Clash
     </h3>
-    <textarea rows="15">
-        proxies:
-        -
-        name: proxy1
-        type: vmess
-        server: ray.me
-        port: 443
-        uuid: 3fc6edef-eae9-400a-be45-220ff5aa982e
-        alterId: 64
-        cipher: auto
-        tls: true
-        skip-cert-verify: false
-        servername: ray.me
-        network: ws
-        ws-opts:
-        path: /helloworld
+    <textarea rows="15" id="clashConfig">
+
     </textarea>
+    <button data-clipboard-target="#clashConfig" class="copy-btn">
+        Copy to Clipboard
+    </button>
     <h2>4️⃣ Just enjoy 🚀</h2>
     <footer class="site-footer">
 
@@ -140,8 +131,35 @@ proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=t
     </footer>
 </main>
 
+<template id="surgeConfigTpl">
+    <textarea rows="3">
+[Proxy]
+proxy1 = vmess, __DomainName__, 443, username=__ClientId__, ws=true, ws-path=__WsPath__, tls=true
+    </textarea>
+</template>
+<template id="clashConfigTpl">
+  <textarea rows="15">
+      proxies:
+        -
+          name: proxy1
+          type: vmess
+          server: __DomainName__
+          port: 443
+          uuid: __ClientId__
+          alterId: 64
+          cipher: auto
+          tls: true
+          skip-cert-verify: false
+          servername: __DomainName__
+          network: ws
+          ws-opts:
+            path: __WsPath__
+    </textarea>
+</template>
 <script>
   regenerateClientId();
+  generateClientConfig();
+  new ClipboardJS('.copy-btn');
 
   function regenerateClientId() {
     document.getElementById('clientId').value = uuid.v4();
@@ -166,9 +184,8 @@ proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=t
       return;
     }
 
-    let [initV2RayFile, initSSFile, initLetsEncryptFile, initDockerComposeFile, v2RayConfigFile, nginxConfigFile] = await Promise.all([
+    let [initV2RayFile, initLetsEncryptFile, initDockerComposeFile, v2RayConfigFile, nginxConfigFile] = await Promise.all([
       fetch('./v2ray_config/init-v2ray.sh').then(res => res.text()),
-      fetch('./v2ray_config/init-shadowsocks.sh').then(res => res.text()),
       fetch('./v2ray_config/init-letsencrypt.sh').then(res => res.text()),
       fetch('./v2ray_config/docker-compose.yml').then(res => res.text()),
       fetch('./v2ray_config/v2ray/config.json').then(res => res.text()),
@@ -194,17 +211,14 @@ proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=t
     ];
 
     /**
-     * replace ray.alanhe.me,qianghe421@gmail.com with your domain name,email, file: init-letsencrypt.sh, nginx/conf.d/default.conf
+     * replace template config
      */
     initV2RayFile = replaceConfig(initV2RayFile, replacePattern);
-    initSSFile = replaceConfig(initSSFile, replacePattern);
     initLetsEncryptFile = replaceConfig(initLetsEncryptFile, replacePattern);
     v2RayConfigFile = replaceConfig(v2RayConfigFile, replacePattern);
     nginxConfigFile = replaceConfig(nginxConfigFile, replacePattern);
 
-
     zip.file('v2ray-docker/init-v2ray.sh', initV2RayFile);
-    zip.file('v2ray-docker/init-shadowsocks.sh', initSSFile);
     zip.file('v2ray-docker/init-letsencrypt.sh', initLetsEncryptFile);
     zip.file('v2ray-docker/docker-compose.yml', initDockerComposeFile);
     zip.file('v2ray-docker/v2ray/config.json', v2RayConfigFile);
@@ -212,12 +226,29 @@ proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=t
 
     zip.generateAsync({type: 'blob'}).then(function (content) {
       saveAs(content, 'v2ray-docker.zip');
+      generateClientConfig(replacePattern);
     });
   }
 
 
   function replaceConfig(cnt, replacePattern) {
     return replacePattern.reduce((res, item) => res.replaceAll(item.key, item.value), cnt);
+  }
+
+  function generateClientConfig(replacePattern = []) {
+    const surgeConfigEl = document.getElementById('surgeConfig');
+    const clashConfigEl = document.getElementById('clashConfig');
+
+    const surgeConfigTplEl = document.getElementById('surgeConfigTpl').content.querySelector('textarea');
+    const clashConfigTplEl = document.getElementById('clashConfigTpl').content.querySelector('textarea');
+    if (replacePattern.length) {
+      surgeConfigEl.value = replaceConfig(surgeConfigTplEl.value, replacePattern);
+      clashConfigEl.value = replaceConfig(clashConfigTplEl.value, replacePattern);
+    } else {
+      surgeConfigEl.value = surgeConfigTplEl.value;
+      clashConfigEl.value = clashConfigTplEl.value;
+    }
+
   }
 
 </script>
