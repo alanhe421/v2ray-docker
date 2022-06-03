@@ -856,3 +856,7 @@ form label:not(:first-child) {
 form input {
   width: 400px;
 }
+
+textarea {
+  width: 600px;
+}

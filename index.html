@@ -44,7 +44,7 @@
 </header>
 
 <main id="content" class="main-content" role="main">
-    <h2 id="welcome-to-github-pages">Config</h2>
+    <h2 id="welcome-to-github-pages">1️⃣ Generate Config</h2>
     <form id="configForm">
         <label for="domainName">
             <div class="required">
@@ -76,7 +76,7 @@
         Download Config
     </button>
 
-    <h2>Get Started</h2>
+    <h2>2️⃣ Deploy</h2>
 
     Notice: `CentOS 7 x64`, Don't use CentOS 8
 
@@ -103,6 +103,35 @@ wget -qO- git.io/superbench.sh | bash</code></pre>
 
         </li>
     </ol>
+    <h2>3️⃣ Client Config</h2>
+    <h3>
+        Surge
+    </h3>
+    <textarea rows="3">
+        [Proxy]
+proxy1 = vmess, ray.me, 443, username=3fc6edef-eae9-400a-be45-220ff5aa982e, ws=true, ws-path=/helloworld, tls=true
+    </textarea>
+    <h3>
+        Clash
+    </h3>
+    <textarea rows="15">
+        proxies:
+        -
+        name: proxy1
+        type: vmess
+        server: ray.me
+        port: 443
+        uuid: 3fc6edef-eae9-400a-be45-220ff5aa982e
+        alterId: 64
+        cipher: auto
+        tls: true
+        skip-cert-verify: false
+        servername: ray.me
+        network: ws
+        ws-opts:
+        path: /helloworld
+    </textarea>
+    <h2>4️⃣ Just enjoy 🚀</h2>
     <footer class="site-footer">
 
         <span class="site-footer-owner"><a href="https://github.com/alanhg/v2ray-docker">v2ray-docker</a> is maintained by <a
@@ -126,24 +155,26 @@ wget -qO- git.io/superbench.sh | bash</code></pre>
   }
 
   async function formSubmit() {
-    const zip = new JSZip();
-    let initV2RayFile = await fetch('./v2ray_config/init-v2ray.sh').then(res => res.text());
-    let initSSFile = await fetch('./v2ray_config/init-shadowsocks.sh').then(res => res.text());
-    let initLetsEncryptFile = await fetch('./v2ray_config/init-letsencrypt.sh').then(res => res.text());
-    let initDockerComposeFile = await fetch('./v2ray_config/docker-compose.yml').then(res => res.text());
-    let v2RayConfigFile = await fetch('./v2ray_config/v2ray/config.json').then(res => res.text());
-    let nginxConfigFile = await fetch('./v2ray_config/nginx/conf.d/default.conf').then(res => res.text());
-
-
     const domainName = document.getElementById('domainName').value;
     const email = document.getElementById('email').value;
     const clientId = document.getElementById('clientId').value;
     const wsPath = document.getElementById('wsPath').value;
 
     if (!domainName || !email || !clientId || !wsPath) {
-      alert('filed is required!');
+      alert('All config-field is required!');
       return;
     }
+
+    let [initV2RayFile, initSSFile, initLetsEncryptFile, initDockerComposeFile, v2RayConfigFile, nginxConfigFile] = await Promise.all([
+      fetch('./v2ray_config/init-v2ray.sh').then(res => res.text()),
+      fetch('./v2ray_config/init-shadowsocks.sh').then(res => res.text()),
+      fetch('./v2ray_config/init-letsencrypt.sh').then(res => res.text()),
+      fetch('./v2ray_config/docker-compose.yml').then(res => res.text(),
+          fetch('./v2ray_config/v2ray/config.json').then(res => res.text()),
+          fetch('./v2ray_config/nginx/conf.d/default.conf').then(res => res.text()),
+      )
+    ])
+    const zip = new JSZip();
     const replacePattern = [
       {
         key: '__DomainName__',
