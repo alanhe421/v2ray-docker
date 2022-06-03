@@ -895,3 +895,9 @@ a {
 .highlight{
   color: #AD0000;
 }
+
+.sponsor{
+  position: fixed;
+  right: 40px;
+  top: 350px;
+}
