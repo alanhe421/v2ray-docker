@@ -36,65 +36,70 @@
 
 </head>
 <body data-new-gr-c-s-check-loaded="14.1062.0" data-gr-ext-installed="">
-<a id="skip-to-content" href="#content">Skip to the content.</a>
 
 <header class="page-header" role="banner">
     <h1 class="project-name">v2ray-docker</h1>
-    <h2 class="project-tagline">fill form and download</h2>
+    <h2 class="project-tagline">快速搭建代理服务</h2>
 </header>
-
 <main id="content" class="main-content" role="main">
-    <h2 id="welcome-to-github-pages">1️⃣ Generate Config</h2>
+    <ul>
+        <li>
+            时间也是钱，如果不愿意折腾配置，推荐<a href="https://portal.shadowsocks.nz/aff.php?aff=27252">机场</a>，自用即可，不要广泛传播。
+        </li>
+        <li>
+            针对VPS机器，推荐<a href="https://www.vultr.com/?ref=8363373">Vultr</a>，优点支持按时间收费且不存在被封风险，各有优点，任君选。
+        </li>
+        <li>
+            有了VPS机器及域名，就可以按照如下步骤搞起。
+        </li>
+    </ul>
+    <h2 id="welcome-to-github-pages">1️⃣ 配置生成</h2>
     <form id="configForm">
         <label for="domainName">
             <div class="required">
-                Domain Name
+                域名
             </div>
             <input id="domainName" type="text" required/>
         </label>
         <label for="email">
             <div class="required">
-                Email
+                邮箱
             </div>
             <input id="email" type="text" required/>
         </label>
         <label for="clientId">
             <div class="required">
-                ClientId
+                V2Ray ClientId即VMessID
             </div>
             <input id="clientId" type="text"/>
-            <a onclick="regenerateClientId()">(Randomly generate)</a>
+            <a onclick="regenerateClientId()">(重新生成)</a>
         </label>
         <label for="wsPath">
             <div class="required">
-                wsPath
+                WebSocket Path
             </div>
             <input id="wsPath" type="text" value="/helloworld" required/>
         </label>
     </form>
     <button onclick="formSubmit()">
-        Download Config
+        下载配置
     </button>
 
-    <h2>2️⃣ Deploy</h2>
+    <h2>2️⃣ 部署</h2>
 
-    Notice: `CentOS 7 x64`, Don't use CentOS 8
+    服务器系统推荐: <span class="highlight">CentOS 7 x64</span>, 不要使用<span class="highlight">CentOS 8</span>
 
     <ol>
         <li>
-            add dns record VPS ip on site
+            DNS解析增加域名A记录
         </li>
-        <li>
-            upload config to VPS
+        <li>上传ZIP配置包到目标服务器
         </li>
-        <li>
-            execute the following command
+        <li>执行以下命令
             <pre><code>chmod +x ./*.sh
 ./init-v2ray.sh
-# Pay attention to time zone
-timedatectl set-timezone Asia/Shanghai
 
-# Speed Test
+# 速度测试
 # abroad
 wget -qO- bench.sh | bash
 
@@ -103,14 +108,14 @@ wget -qO- git.io/superbench.sh | bash</code></pre>
 
         </li>
     </ol>
-    <h2>3️⃣ Client Config</h2>
+    <h2>3️⃣ 客户端App配置</h2>
     <h3>
         Surge
     </h3>
     <textarea rows="3" id="surgeConfig">
     </textarea>
     <button data-clipboard-target="#surgeConfig" class="copy-btn">
-        Copy to Clipboard
+        复制
     </button>
     <h3>
         Clash
@@ -119,9 +124,9 @@ wget -qO- git.io/superbench.sh | bash</code></pre>
 
     </textarea>
     <button data-clipboard-target="#clashConfig" class="copy-btn">
-        Copy to Clipboard
+        复制
     </button>
-    <h2>4️⃣ Just enjoy 🚀</h2>
+    <h2>4️⃣ 谷歌一把 🚀</h2>
     <footer class="site-footer">
 
         <span class="site-footer-owner"><a href="https://github.com/alanhg/v2ray-docker">v2ray-docker</a> is maintained by <a
@@ -166,9 +171,9 @@ proxy1 = vmess, __DomainName__, 443, username=__ClientId__, ws=true, ws-path=__W
     console.info('Text:', e.text);
     console.info('Trigger:', e.trigger);
     e.clearSelection();
-    e.trigger.innerText = 'Copied';
+    e.trigger.innerText = '已复制';
     window.setTimeout(() => {
-      e.trigger.innerText = 'Copy to Clipboard';
+      e.trigger.innerText = '复制';
     }, 3000);
   });
 

@@ -14,6 +14,9 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
+# timezone
+timedatectl set-timezone Asia/Shanghai
+
 # apply for a certificate
 ./init-letsencrypt.sh
 

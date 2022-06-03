@@ -455,7 +455,6 @@ td, th {
 }
 
 .highlight {
-  background-color: #f8f8f8
 }
 
 * {
@@ -891,4 +890,8 @@ a {
 
 .copy-btn {
   width: 165px;
+}
+
+.highlight{
+  color: #AD0000;
 }
