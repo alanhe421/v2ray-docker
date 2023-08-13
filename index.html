@@ -62,6 +62,12 @@
             </div>
             <input id="domainName" type="text" required/>
         </label>
+        <label for="port">
+            <div class="required">
+                端口
+            </div>
+            <input id="port" type="number" required value="443"/>
+        </label>
         <label for="email">
             <div class="required">
                 邮箱
@@ -166,7 +172,7 @@ proxy1 = vmess, __DomainName__, 443, username=__ClientId__, ws=true, ws-path=__W
           name: proxy1
           type: vmess
           server: __DomainName__
-          port: 443
+          port: __Port__
           uuid: __ClientId__
           alterId: 64
           cipher: auto
@@ -214,12 +220,12 @@ scp v2ray-docker.zip root@__TargetIP__:/root</textarea>
 
   async function formSubmit() {
     const domainName = document.getElementById('domainName').value;
+    const port = document.getElementById('port').value;
     const email = document.getElementById('email').value;
     const clientId = document.getElementById('clientId').value;
     const wsPath = document.getElementById('wsPath').value;
     const targetIp = document.getElementById('targetIP').value;
-
-    if (!domainName || !email || !clientId || !wsPath) {
+    if (!domainName || !email || !clientId || !wsPath || !port) {
       alert('All config-field is required!');
       return;
     }
@@ -236,6 +242,10 @@ scp v2ray-docker.zip root@__TargetIP__:/root</textarea>
       {
         key: '__DomainName__',
         value: domainName
+      },
+      {
+        key: '__Port__',
+        value: port
       },
       {
         key: '__Email__',
