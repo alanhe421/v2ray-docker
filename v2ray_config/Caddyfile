@@ -1,0 +1,10 @@
+{
+    # 全局选项块
+    # 这里可以放置全局配置
+}
+
+__DomainName__ {
+    reverse_proxy /batman v2ray:10086 {
+        tls __Email__
+    }
+}

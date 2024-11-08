@@ -230,12 +230,11 @@ scp v2ray-docker.zip root@__TargetIP__:/root</textarea>
       return;
     }
 
-    let [initV2RayFile, initLetsEncryptFile, initDockerComposeFile, v2RayConfigFile, nginxConfigFile] = await Promise.all([
+    let [initV2RayFile, initDockerComposeFile, v2RayConfigFile, caddyConfigFile] = await Promise.all([
       fetch('./v2ray_config/init-v2ray.sh').then(res => res.text()),
-      fetch('./v2ray_config/init-letsencrypt.sh').then(res => res.text()),
       fetch('./v2ray_config/docker-compose.yml').then(res => res.text()),
       fetch('./v2ray_config/v2ray/config.json').then(res => res.text()),
-      fetch('./v2ray_config/nginx/conf.d/default.conf').then(res => res.text())
+      fetch('./v2ray_config/Caddyfile').then(res => res.text())
     ])
     const zip = new JSZip();
     const replacePattern = [
@@ -268,15 +267,13 @@ scp v2ray-docker.zip root@__TargetIP__:/root</textarea>
      * replace template config
      */
     initV2RayFile = replaceConfig(initV2RayFile, replacePattern);
-    initLetsEncryptFile = replaceConfig(initLetsEncryptFile, replacePattern);
     v2RayConfigFile = replaceConfig(v2RayConfigFile, replacePattern);
-    nginxConfigFile = replaceConfig(nginxConfigFile, replacePattern);
+    caddyConfigFile = replaceConfig(caddyConfigFile, replacePattern);
 
     zip.file('v2ray-docker/init-v2ray.sh', initV2RayFile);
-    zip.file('v2ray-docker/init-letsencrypt.sh', initLetsEncryptFile);
     zip.file('v2ray-docker/docker-compose.yml', initDockerComposeFile);
     zip.file('v2ray-docker/v2ray/config.json', v2RayConfigFile);
-    zip.file('v2ray-docker/nginx/conf.d/default.conf', nginxConfigFile);
+    zip.file('v2ray-docker/Caddyfile', caddyConfigFile);
 
     zip.generateAsync({type: 'blob'}).then(function (content) {
       saveAs(content, 'v2ray-docker.zip');

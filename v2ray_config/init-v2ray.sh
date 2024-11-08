@@ -17,9 +17,6 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 # timezone
 timedatectl set-timezone Asia/Shanghai
 
-# apply for a certificate
-./init-letsencrypt.sh
-
 docker-compose up -d
 
 # BBR install
