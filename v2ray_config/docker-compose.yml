@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./logs:/var/log/caddy
+      - ./log:/var/log/caddy
     ports:
       - "80:80"
       - "443:443"
