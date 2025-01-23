@@ -5,7 +5,7 @@
 }
 
 __DomainName__ {
-    reverse_proxy /batman v2ray:10086 {
+    reverse_proxy __WsPath__ v2ray:10086 {
 
     }
 }
