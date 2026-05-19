@@ -107,7 +107,7 @@
         <select id="osType" onchange="updateOsTip()">
             <option value="auto">自动检测 (推荐)</option>
             <option value="centos">CentOS 7 x64</option>
-            <option value="ubuntu">Ubuntu 20.04 / 22.04 x64</option>
+            <option value="ubuntu">Ubuntu 20.04 / 22.04 / 24.04 x64</option>
         </select>
     </label>
     <p id="osTip">已支持 <span class="highlight">CentOS 7</span> 与 <span class="highlight">Ubuntu</span>，安装脚本会自动识别系统并选用对应包管理器 (yum/apt)。不要使用 <span class="highlight">CentOS 8</span>。</p>
@@ -228,7 +228,7 @@ scp v2ray-docker.zip root@__TargetIP__:/root</textarea>
     const tips = {
       auto: '已支持 <span class="highlight">CentOS 7</span> 与 <span class="highlight">Ubuntu</span>，安装脚本会自动识别系统并选用对应包管理器 (yum/apt)。不要使用 <span class="highlight">CentOS 8</span>。',
       centos: '推荐 <span class="highlight">CentOS 7 x64</span>，脚本使用 <span class="highlight">yum</span> 安装依赖。不要使用 <span class="highlight">CentOS 8</span>。',
-      ubuntu: '推荐 <span class="highlight">Ubuntu 20.04 / 22.04 x64</span>，脚本使用 <span class="highlight">apt</span> 安装依赖（执行前会自动 apt-get update）。'
+      ubuntu: '推荐 <span class="highlight">Ubuntu 20.04 / 22.04 / 24.04 x64</span>，脚本使用 <span class="highlight">apt</span> 安装依赖（执行前会自动 apt-get update）。'
     };
     tip.innerHTML = tips[sel.value] || tips.auto;
   }
