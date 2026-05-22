@@ -1,4 +1,3 @@
-version: "3"
 services:
   v2ray:
     image: v2ray/official
@@ -21,8 +20,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    depends_on:
+      - v2ray
     environment:
       - ACME_AGREE=true
-    links:
-      - "v2ray"
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
