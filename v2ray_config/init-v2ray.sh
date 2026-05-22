@@ -24,7 +24,7 @@ case "${OS_ID}:${OS_LIKE}" in
     elif command -v dnf >/dev/null 2>&1; then
       PKG_FAMILY="rhel"
     else
-      echo "Unsupported OS: ${OS_ID}. Please install wget/curl/docker/docker-compose manually."
+      echo "Unsupported OS: ${OS_ID}. Please install wget/curl/docker/docker compose manually."
       PKG_FAMILY="unknown"
     fi
     ;;
@@ -47,6 +47,7 @@ pkg_install() {
       ;;
     *)
       echo "Skip install: unsupported package family for $*"
+      return 1
       ;;
   esac
 }
@@ -57,7 +58,7 @@ if ! command -v wget >/dev/null 2>&1; then
   pkg_install wget
 fi
 
-# install curl if missing (needed to fetch docker-compose binary)
+# install curl if missing (needed to fetch Docker/Compose installers)
 if ! command -v curl >/dev/null 2>&1; then
   echo "Installing curl..."
   pkg_install curl
@@ -73,22 +74,51 @@ else
   echo "Docker is already installed"
 fi
 
-# install docker-compose if not exists
-if ! command -v docker-compose >/dev/null 2>&1; then
-  echo "Installing docker-compose..."
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
-  if [ ! -e /usr/bin/docker-compose ]; then
-    sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+install_compose_plugin_binary() {
+  local os arch plugin_dir plugin_path
+  os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+  arch="$(uname -m)"
+
+  case "${arch}" in
+    x86_64|amd64)
+      arch="x86_64"
+      ;;
+    aarch64|arm64)
+      arch="aarch64"
+      ;;
+    armv7l|armv7)
+      arch="armv7"
+      ;;
+    *)
+      echo "Unsupported architecture for Docker Compose plugin binary: ${arch}"
+      return 1
+      ;;
+  esac
+
+  plugin_dir="/usr/local/lib/docker/cli-plugins"
+  plugin_path="${plugin_dir}/docker-compose"
+  sudo mkdir -p "${plugin_dir}"
+  sudo curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-${os}-${arch}" -o "${plugin_path}"
+  sudo chmod +x "${plugin_path}"
+}
+
+# install Docker Compose v2 plugin if missing
+if ! docker compose version >/dev/null 2>&1; then
+  echo "Installing Docker Compose v2 plugin..."
+  if ! pkg_install docker-compose-plugin; then
+    install_compose_plugin_binary
   fi
-else
-  echo "Docker-compose is already installed"
+fi
+
+if ! docker compose version >/dev/null 2>&1; then
+  echo "Docker Compose v2 is not available. Please install the docker compose plugin manually."
+  exit 1
 fi
 
 # timezone
 sudo timedatectl set-timezone Asia/Shanghai || true
 
-docker-compose up -d
+docker compose up -d
 
 # BBR install
 #wget –no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh
